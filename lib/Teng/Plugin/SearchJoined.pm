@@ -12,27 +12,29 @@ our @EXPORT = qw/search_joined/;
 sub search_joined {
     my ($self, $base_table, $join_conditions, $where, $opt) = @_;
 
-    my @tables = ($base_table);
+    my @table_names = ($base_table);
     my $i = 0;
     while (my $table = $join_conditions->[$i]) {
-        push @tables, $table;
+        push @table_names, $table;
         $i += 2;
     }
+    my @tables = map { $self->{schema}->get_table($_) } @table_names;
 
     my @fields;
     for my $table (@tables) {
-        my @columns = @{ $self->_get_select_columns($table) };
-        @columns = map { [$_, "${table}__$_"] } @columns;
+        my $table_name = $table->name;
+        my @columns = map { ["$table_name.$_", "${table_name}__$_"] } @{ $table->columns };
         push @fields, @columns;
     }
 
-    my ($sql, @binds) = $self->{sql_builder}->join_search($base_table, $join_conditions, \@fields, $where, $opt);
+    my ($sql, @binds) = $self->{sql_builder}->join_select($base_table, $join_conditions, \@fields, $where, $opt);
     my $sth = $self->execute($sql, \@binds);
     my $itr = Teng::Plugin::SearchJoined::Iterator->new(
-        teng   => $self,
-        sth    => $sth,
-        sql    => $sql,
-        tables => \@tables,
+        teng        => $self,
+        sth         => $sth,
+        sql         => $sql,
+        tables      => \@tables,
+        table_names => \@table_names,
     );
 
     $itr;

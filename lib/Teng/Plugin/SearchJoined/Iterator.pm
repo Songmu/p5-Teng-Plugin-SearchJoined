@@ -4,7 +4,7 @@ use warnings;
 use Carp ();
 use Class::Accessor::Lite (
     new => 1,
-    ro  => [qw/teng sql tables/],
+    ro  => [qw/teng sql tables table_names/],
     rw  => [qw/sth/],
 );
 
@@ -16,7 +16,7 @@ sub _row_class {
 sub _table_reg {
     my $self = shift;
     $self->{_table_reg} //= do {
-        my $reg = '(' . join('|', map {quotemeta $_} @{$self->{tables}}) . ')';
+        my $reg = '(?:' . join('|', map {quotemeta $_} @{$self->{table_names}}) . ')';
         qr/$reg/;
     };
 }
@@ -39,14 +39,14 @@ sub next {
     my $data = $self->_seperate_rows($row);
 
     if ($self->{suppress_object_creation}) {
-        return @{$data->{ @{$self->{tables}} }};
+        return @{$data->{ @{$self->{table_names}} }};
     } else {
         return map {$self->_row_class($_)->new({
             sql            => $self->{sql},
             row_data       => $data->{$_},
             teng           => $self->{teng},
             table_name     => $_,
-        }) } @{$self->tables};
+        }) } @{$self->{table_names}};
     }
 }
 
