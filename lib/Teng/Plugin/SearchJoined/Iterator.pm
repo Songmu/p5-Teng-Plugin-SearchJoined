@@ -4,7 +4,7 @@ use warnings;
 use Carp ();
 use Class::Accessor::Lite (
     new => 1,
-    ro  => [qw/teng sql tables table_names/],
+    ro  => [qw/teng sql tables table_names link_str/],
     rw  => [qw/sth suppress_object_creation/],
 );
 
@@ -55,8 +55,9 @@ sub _seperate_rows {
 
     my %data;
     my $table_reg = $self->_table_reg;
+    my $link_str  = quotemeta $self->{link_str};
     for my $key (keys %$row) {
-        my ($table, $column) = $key =~ /^(${table_reg})__(.*)$/;
+        my ($table, $column) = $key =~ /^(${table_reg})$link_str(.*)$/;
 
         if ($table && $column) {
             $data{$table}{$column} = $row->{$key};
