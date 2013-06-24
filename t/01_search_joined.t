@@ -86,4 +86,28 @@ subtest 'triple' => sub {
     is $count, 1;
 };
 
+subtest 'suppress_object_creation' => sub {
+    my $itr = $db->search_joined(user_item => [
+        user => {'user_item.user_id' => 'user.id'},
+        item => {'user_item.item_id' => 'item.id'},
+    ], {
+        'user.id' => 2,
+    }, {
+        order_by => 'user_item.item_id',
+    });
+    isa_ok $itr, 'Teng::Plugin::SearchJoined::Iterator';
+
+    $itr->suppress_object_creation(1);
+    my $count = 0;
+    while (my ($user_item, $user, $item) = $itr->next) {
+        isa_ok $user_item, 'HASH';
+        isa_ok $user,      'HASH';
+        isa_ok $item,      'HASH';
+        ok $user->{name}, 'bbb';
+        ok $item->{name}, 'bbb_item';
+        $count++;
+    }
+    is $count, 1;
+};
+
 done_testing;

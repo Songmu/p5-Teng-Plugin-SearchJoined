@@ -35,6 +35,7 @@ sub search_joined {
         sql         => $sql,
         tables      => \@tables,
         table_names => \@table_names,
+        suppress_object_creation => $self->{suppress_row_objects},
     );
 
     $itr;
