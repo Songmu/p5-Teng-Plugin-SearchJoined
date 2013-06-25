@@ -4,7 +4,7 @@ use warnings;
 use Carp ();
 use Class::Accessor::Lite (
     new => 1,
-    ro  => [qw/teng sql tables table_names link_str/],
+    ro  => [qw/teng sql table_names fields/],
     rw  => [qw/sth suppress_object_creation/],
 );
 
@@ -13,20 +13,12 @@ sub _row_class {
     $self->{_row_class}{$table} //= $self->{teng}{schema}->get_row_class($table);
 }
 
-sub _table_reg {
-    my $self = shift;
-    $self->{_table_reg} //= do {
-        my $reg = '(?:' . join('|', map {quotemeta $_} @{$self->{table_names}}) . ')';
-        qr/$reg/;
-    };
-}
-
 sub next {
     my $self = shift;
 
     my $row;
     if ($self->{sth}) {
-        $row = $self->{sth}->fetchrow_hashref;
+        $row = $self->{sth}->fetchrow_arrayref;
         unless ( $row ) {
             $self->{sth}->finish;
             $self->{sth} = undef;
@@ -52,21 +44,14 @@ sub next {
 
 sub _seperate_rows {
     my ($self, $row) = @_;
-
     my %data;
-    my $table_reg = $self->_table_reg;
-    my $link_str  = quotemeta $self->{link_str};
-    for my $key (keys %$row) {
-        my ($table, $column) = $key =~ /^(${table_reg})$link_str(.*)$/;
-
-        if ($table && $column) {
-            $data{$table}{$column} = $row->{$key};
-        }
-        else {
-            $data{''}{$key} = $row->{$key};
-        }
+    my $name_sep = quotemeta $self->{teng}{sql_builder}{name_sep};
+    my $i = 0;
+    for my $field (@{ $self->{fields} }) {
+        my $value = $row->[$i++];
+        my ($table, $column) = split /$name_sep/, $field;
+        $data{$table}{$column} = $value;
     }
-
     \%data;
 }
 

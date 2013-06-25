@@ -9,8 +9,6 @@ use Teng::Plugin::SearchJoined::Iterator;
 
 our @EXPORT = qw/search_joined/;
 
-our $LINK_STR = '__';
-
 sub search_joined {
     my ($self, $base_table, $join_conditions, $where, $opt) = @_;
 
@@ -22,11 +20,11 @@ sub search_joined {
     }
     my @tables = map { $self->{schema}->get_table($_) } @table_names;
 
-    my $link_str = $LINK_STR;
+    my $name_sep = $self->{sql_builder}{name_sep};
     my @fields;
     for my $table (@tables) {
         my $table_name = $table->name;
-        my @columns = map { ["$table_name.$_", "${table_name}$link_str$_"] } @{ $table->columns };
+        my @columns = map { "$table_name$name_sep$_" } @{ $table->columns };
         push @fields, @columns;
     }
 
@@ -36,10 +34,9 @@ sub search_joined {
         teng        => $self,
         sth         => $sth,
         sql         => $sql,
-        tables      => \@tables,
         table_names => \@table_names,
         suppress_object_creation => $self->{suppress_row_objects},
-        link_str    => $link_str,
+        fields      => \@fields,
     );
 
     $itr;
