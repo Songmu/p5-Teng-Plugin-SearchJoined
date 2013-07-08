@@ -1,5 +1,5 @@
 package Teng::Plugin::SearchJoined;
-use 5.008005;
+use 5.008001;
 use strict;
 use warnings;
 
@@ -51,15 +51,42 @@ __END__
 
 =head1 NAME
 
-Teng::Plugin::SearchJoined - It's new $module
+Teng::Plugin::SearchJoined - Teng plugin for Joined query
 
 =head1 SYNOPSIS
 
-    use Teng::Plugin::SearchJoined;
+    package MyDB;
+    use parent qw/Teng/;
+    __PACKAGE__->load_plugin('SearchJoined');
+    
+    package main;
+    my $db = MyDB->new(...);
+    my $itr = $db->search_joined(user_item => [
+        user => {'user_item.user_id' => 'user.id'},
+        item => {'user_item.item_id' => 'item.id'},
+    ], {
+        'user.id' => 2,
+    }, {
+        order_by => 'user_item.item_id',
+    });
+    
+    while (my ($user_item, $user, $item) = $itr->next) {
+        ...
+    }
 
 =head1 DESCRIPTION
 
-Teng::Plugin::SearchJoined is ...
+Teng::Plugin::SearchJoined is a Plugin of Teng for joined query.
+
+=head1 INTERFACE
+
+=head2 Method
+
+=head3 L<< $itr:Teng::Plugin::SearchJoined::Iterator = $db->search_joined($table, $join_conds, \%where, \%opts) >>
+
+L<$table>, L<\%where> and L<\%opts> are same as arguments of L<< Teng#search >>.
+
+L<$join_conds> is same as argument of L<< SQL::Maker::Plugin::JoinSelect#join_select >>.
 
 =head1 LICENSE
 

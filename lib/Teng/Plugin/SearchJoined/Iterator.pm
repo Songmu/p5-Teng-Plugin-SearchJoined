@@ -10,7 +10,7 @@ use Class::Accessor::Lite (
 
 sub _row_class {
     my ($self, $table) = @_;
-    $self->{_row_class}{$table} //= $self->{teng}{schema}->get_row_class($table);
+    $self->{_row_class}{$table} ||= $self->{teng}{schema}->get_row_class($table);
 }
 
 sub next {
@@ -56,3 +56,53 @@ sub _seperate_rows {
 }
 
 1;
+__END__
+
+=encoding utf-8
+
+=head1 NAME
+
+Teng::Plugin::SearchJoined::Iterator - Iterator from Teng::Plugin::SearchJoined
+
+=head1 SYNOPSIS
+
+    my $itr = $db->search_joined(...);
+    while ( my ($row1, $row2,...) = $itr->next ) {
+        ...
+    }
+
+    my $itr = $db->search_joined(...);
+    $itr->suppress_object_creation;
+    while ( my ($row_hash2, $row_hash2,...) = $itr->next ) {
+        ...
+    }
+
+=head1 DESCRIPTION
+
+Teng::Plugin::SearchJoined::Iterator is an Iterator from Teng::Plugin::SearchJoined.
+
+=head1 INTERFACE
+
+=head2 Method
+
+=head3 L<< ($row1, $row2...) = $itr->next >>
+
+Get next data of row objects.
+
+=head3 L<< $itr->suppress_object_creation($bool) >>
+
+Set row object creation mode.
+
+=head1 LICENSE
+
+Copyright (C) Masayuki Matsuki.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=head1 AUTHOR
+
+Masayuki Matsuki E<lt>y.songmu@gmail.comE<gt>
+
+=cut
+
