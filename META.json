@@ -42,12 +42,17 @@
       },
       "runtime" : {
          "requires" : {
+            "Class::Accessor::Lite" : "0",
+            "SQL::Maker" : "0",
+            "SQL::Maker::Plugin::JoinSelect" : "0",
+            "Teng" : "0",
             "perl" : "5.008001"
          }
       },
       "test" : {
          "requires" : {
-            "Test::More" : "0.98"
+            "Test::More" : "0.98",
+            "parent" : "0"
          }
       }
    },
@@ -63,5 +68,5 @@
          "web" : "https://github.com/Songmu/p5-Teng-Plugin-SearchJoined"
       }
    },
-   "version" : "0.01"
+   "version" : "0.02"
 }
