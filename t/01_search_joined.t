@@ -5,7 +5,6 @@ use Test::More;
 use t::Utils;
 use Mock::BasicJoin;
 
-Teng::QueryBuilder->load_plugin('JoinSelect');
 Mock::BasicJoin->load_plugin('SearchJoined');
 
 my $dbh = t::Utils->setup_dbh;

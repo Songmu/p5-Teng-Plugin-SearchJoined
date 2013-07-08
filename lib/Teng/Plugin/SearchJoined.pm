@@ -6,6 +6,8 @@ use warnings;
 our $VERSION = "0.01";
 
 use Teng::Plugin::SearchJoined::Iterator;
+use SQL::Maker;
+SQL::Maker->load_plugin('JoinSelect');
 
 our @EXPORT = qw/search_joined/;
 
