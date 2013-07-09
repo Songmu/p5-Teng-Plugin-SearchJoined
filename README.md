@@ -33,11 +33,17 @@ Teng::Plugin::SearchJoined is a Plugin of Teng for joined query.
 
 ## Method
 
-### ["$itr:Teng::Plugin::SearchJoined::Iterator = $db->search\_joined($table, $join\_conds, \\%where, \\%opts)"](#$itr:Teng::Plugin::SearchJoined::Iterator = $db->search\_joined($table, $join\_conds, \\%where, \\%opts))
+### `$itr:Teng::Plugin::SearchJoined::Iterator = $db->search_joined($table, $join_conds, \%where, \%opts)`
 
-[$table](http://search.cpan.org/perldoc?$table), [\\%where](http://search.cpan.org/perldoc?\\%where) and [\\%opts](http://search.cpan.org/perldoc?\\%opts) are same as arguments of [Teng\#search](http://search.cpan.org/perldoc?Teng\#search).
+`$table`, `\%where` and `\%opts` are same as arguments of [Teng](http://search.cpan.org/perldoc?Teng)'s `search` method.
 
-[$join\_conds](http://search.cpan.org/perldoc?$join\_conds) is same as argument of [SQL::Maker::Plugin::JoinSelect\#join\_select](http://search.cpan.org/perldoc?SQL::Maker::Plugin::JoinSelect\#join\_select).
+`$join_conds` is same as argument of [SQL::Maker::Plugin::JoinSelect](http://search.cpan.org/perldoc?SQL::Maker::Plugin::JoinSelect)'s `join_select` method.
+
+# SEE ALSO
+
+[Teng](http://search.cpan.org/perldoc?Teng)
+
+[SQL::Maker::Plugin::JoinSelect](http://search.cpan.org/perldoc?SQL::Maker::Plugin::JoinSelect)
 
 # LICENSE
 

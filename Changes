@@ -2,6 +2,9 @@ Revision history for Perl extension Teng-Plugin-SearchJoined
 
 {{$NEXT}}
 
+0.03 2013-07-09T03:26:17Z
+    - fix document only
+
 0.02 2013-07-08T15:40:17Z
     - fix dependencies
 
