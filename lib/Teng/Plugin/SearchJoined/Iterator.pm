@@ -62,7 +62,7 @@ __END__
 
 =head1 NAME
 
-Teng::Plugin::SearchJoined::Iterator - Iterator from Teng::Plugin::SearchJoined
+Teng::Plugin::SearchJoined::Iterator - Iterator for Teng::Plugin::SearchJoined
 
 =head1 SYNOPSIS
 
@@ -79,17 +79,17 @@ Teng::Plugin::SearchJoined::Iterator - Iterator from Teng::Plugin::SearchJoined
 
 =head1 DESCRIPTION
 
-Teng::Plugin::SearchJoined::Iterator is an Iterator from Teng::Plugin::SearchJoined.
+Teng::Plugin::SearchJoined::Iterator is an Iterator for Teng::Plugin::SearchJoined.
 
 =head1 INTERFACE
 
 =head2 Method
 
-=head3 L<< ($row1, $row2...) = $itr->next >>
+=head3 C<< ($row1, $row2...) = $itr->next >>
 
 Get next data of row objects.
 
-=head3 L<< $itr->suppress_object_creation($bool) >>
+=head3 C<< $itr->suppress_object_creation($bool) >>
 
 Set row object creation mode.
 

@@ -35,6 +35,8 @@ Teng::Plugin::SearchJoined is a Plugin of Teng for joined query.
 
 ### `$itr:Teng::Plugin::SearchJoined::Iterator = $db->search_joined($table, $join_conds, \%where, \%opts)`
 
+Return [Teng::Plugin::SearchJoined::Iterator](http://search.cpan.org/perldoc?Teng::Plugin::SearchJoined::Iterator) object.
+
 `$table`, `\%where` and `\%opts` are same as arguments of [Teng](http://search.cpan.org/perldoc?Teng)'s `search` method.
 
 `$join_conds` is same as argument of [SQL::Maker::Plugin::JoinSelect](http://search.cpan.org/perldoc?SQL::Maker::Plugin::JoinSelect)'s `join_select` method.
