@@ -120,6 +120,24 @@ Teng::Plugin::SearchJoined - Teng plugin for Joined query
         ...
     }
 
+    # SQL interface
+    $itr = $db->search_joined_by_sql(q[
+        SELECT * FROM user_item
+        INNER JOIN user
+            ON user_item.user_id = user.id
+        WHERE user.id = ?
+        ORDER BY user_item.item_id
+    ], [2]);
+
+    # SQL bind named interface
+    $itr = $db->search_joined_named(q[
+        SELECT * FROM user_item
+        INNER JOIN user
+            ON user_item.user_id = user.id
+        WHERE user.id = :user_id
+        ORDER BY user_item.item_id
+    ], { user_id => 2 });
+
 =head1 DESCRIPTION
 
 Teng::Plugin::SearchJoined is a Plugin of Teng for joined query.
@@ -135,6 +153,18 @@ Return L<Teng::Plugin::SearchJoined::Iterator> object.
 C<$table>, C<\%where> and C<\%opts> are same as arguments of L<Teng>'s C<search> method.
 
 C<$join_conds> is same as argument of L<SQL::Maker::Plugin::JoinSelect>'s C<join_select> method.
+
+=head3 C<< $itr:Teng::Plugin::SearchJoined::Iterator = $db->search_joined_by_sql($sql, $bind) >>
+
+Return L<Teng::Plugin::SearchJoined::Iterator> object.
+
+C<$sql> and C<$bind> are same as arguments of L<Teng>'s C<search_by_sql> method.
+
+=head3 C<< $itr:Teng::Plugin::SearchJoined::Iterator = $db->search_joined_named($sql, $args) >>
+
+Return L<Teng::Plugin::SearchJoined::Iterator> object.
+
+C<$sql> and C<$args> are same as arguments of L<Teng>'s C<search_named> method.
 
 =head1 SEE ALSO
 
