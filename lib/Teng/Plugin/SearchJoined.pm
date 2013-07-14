@@ -5,11 +5,12 @@ use warnings;
 
 our $VERSION = "0.03";
 
+use Teng;
 use Teng::Plugin::SearchJoined::Iterator;
 use SQL::Maker;
 SQL::Maker->load_plugin('JoinSelect');
 
-our @EXPORT = qw/search_joined search_joined_by_sql/;
+our @EXPORT = qw/search_joined search_joined_by_sql search_joined_named/;
 
 sub search_joined {
     my ($self, $base_table, $join_conditions, $where, $opt) = @_;
@@ -69,6 +70,12 @@ sub search_joined_by_sql {
     );
 
     $itr;
+}
+
+sub search_joined_named {
+    my ($self, $sql, $args) = @_;
+
+    $self->search_joined_by_sql(Teng->_bind_named($sql, $args));
 }
 
 sub _guess_table_names {
