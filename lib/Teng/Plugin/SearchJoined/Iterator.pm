@@ -16,6 +16,11 @@ sub _row_class {
 sub next {
     my $self = shift;
 
+    my $wantarray = wantarray;
+    if (defined $wantarray && $wantarray == 0) {
+        Carp::carp('calling `next` method in scalar context is deprecated and forbidden in future');
+    }
+
     my $row;
     if ($self->{sth}) {
         $row = $self->{sth}->fetchrow_arrayref;
