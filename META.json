@@ -4,7 +4,7 @@
       "Masayuki Matsuki <y.songmu@gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v0.5.3, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Minilla/v0.11.0, CPAN::Meta::Converter version 2.132510",
    "license" : [
       "perl_5"
    ],
@@ -21,7 +21,8 @@
          "share",
          "eg",
          "examples",
-         "author"
+         "author",
+         "builder"
       ]
    },
    "prereqs" : {
@@ -68,5 +69,5 @@
          "web" : "https://github.com/Songmu/p5-Teng-Plugin-SearchJoined"
       }
    },
-   "version" : "0.03"
+   "version" : "0.04"
 }

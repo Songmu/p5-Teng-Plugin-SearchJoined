@@ -2,6 +2,9 @@ Revision history for Perl extension Teng-Plugin-SearchJoined
 
 {{$NEXT}}
 
+0.04 2014-01-07T15:54:20Z
+    - `next` method in scalar context is deprecated
+
 0.03 2013-07-09T03:26:17Z
     - fix document only
 
