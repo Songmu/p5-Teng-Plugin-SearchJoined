@@ -8,11 +8,6 @@ use Class::Accessor::Lite (
     rw  => [qw/sth suppress_object_creation/],
 );
 
-sub _row_class {
-    my ($self, $table) = @_;
-    $self->{_row_class}{$table} ||= $self->{teng}{schema}->get_row_class($table);
-}
-
 sub next {
     my $self = shift;
 
@@ -38,12 +33,7 @@ sub next {
     if ($self->{suppress_object_creation}) {
         return @$data{ @{$self->{table_names}} };
     } else {
-        return map {$self->_row_class($_)->new({
-            sql            => $self->{sql},
-            row_data       => $data->{$_},
-            teng           => $self->{teng},
-            table_name     => $_,
-        }) } @{$self->{table_names}};
+        return map { $self->{teng}->new_row_from_hash($_, $data->{$_}, $self->{sql}) } @{$self->{table_names}};
     }
 }
 

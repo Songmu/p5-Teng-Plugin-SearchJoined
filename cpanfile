@@ -1,7 +1,7 @@
 requires 'Class::Accessor::Lite';
 requires 'SQL::Maker';
 requires 'SQL::Maker::Plugin::JoinSelect';
-requires 'Teng';
+requires 'Teng', '0.21';
 requires 'perl', '5.008001';
 
 on configure => sub {
