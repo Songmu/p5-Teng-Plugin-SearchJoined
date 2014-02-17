@@ -1,6 +1,8 @@
 Revision history for Perl extension Teng-Plugin-SearchJoined
 
 {{$NEXT}}
+
+0.05 2014-02-17T18:08:49Z
     - use `Teng#new_row_from_hash` for row inflation
     - Bump up deps to Teng 0.21
 
