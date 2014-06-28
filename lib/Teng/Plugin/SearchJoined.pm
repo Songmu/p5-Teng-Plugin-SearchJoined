@@ -5,11 +5,12 @@ use warnings;
 
 our $VERSION = "0.05";
 
+use Teng;
 use Teng::Plugin::SearchJoined::Iterator;
 use SQL::Maker;
 SQL::Maker->load_plugin('JoinSelect');
 
-our @EXPORT = qw/search_joined/;
+our @EXPORT = qw/search_joined search_joined_by_sql search_joined_named/;
 
 sub search_joined {
     my ($self, $base_table, $join_conditions, $where, $opt) = @_;
@@ -44,6 +45,51 @@ sub search_joined {
     $itr;
 }
 
+sub search_joined_by_sql {
+    my ($self, $sql, $bind) = @_;
+
+    my @table_names = __PACKAGE__->_guess_table_names($sql);
+    my @tables = map { $self->{schema}->get_table($_) } @table_names;
+
+    my $name_sep = $self->{sql_builder}{name_sep};
+    my @fields;
+    for my $table (@tables) {
+        my $table_name = $table->name;
+        my @columns = map { "$table_name$name_sep$_" } @{ $table->columns };
+        push @fields, @columns;
+    }
+
+    my $sth = $self->execute($sql, $bind);
+    my $itr = Teng::Plugin::SearchJoined::Iterator->new(
+        teng        => $self,
+        sth         => $sth,
+        sql         => $sql,
+        table_names => \@table_names,
+        suppress_object_creation => $self->{suppress_row_objects},
+        fields      => \@fields,
+    );
+
+    $itr;
+}
+
+sub search_joined_named {
+    my ($self, $sql, $args) = @_;
+
+    $self->search_joined_by_sql(Teng->_bind_named($sql, $args));
+}
+
+sub _guess_table_names {
+    my ($class, $sql) = @_;
+
+    my @table_names;
+    if ($sql =~ /\sfrom\s+["`]?([\w]+)["`]?\s*/si) {
+        push @table_names, $1;
+    }
+    push @table_names, ($sql =~ /\sjoin\s+["`]?([\w]+)["`]?\s*/sig);
+
+    return @table_names;
+}
+
 1;
 __END__
 
@@ -58,7 +104,7 @@ Teng::Plugin::SearchJoined - Teng plugin for Joined query
     package MyDB;
     use parent qw/Teng/;
     __PACKAGE__->load_plugin('SearchJoined');
-    
+
     package main;
     my $db = MyDB->new(...);
     my $itr = $db->search_joined(user_item => [
@@ -69,10 +115,28 @@ Teng::Plugin::SearchJoined - Teng plugin for Joined query
     }, {
         order_by => 'user_item.item_id',
     });
-    
+
     while (my ($user_item, $user, $item) = $itr->next) {
         ...
     }
+
+    # SQL interface
+    $itr = $db->search_joined_by_sql(q[
+        SELECT * FROM user_item
+        INNER JOIN user
+            ON user_item.user_id = user.id
+        WHERE user.id = ?
+        ORDER BY user_item.item_id
+    ], [2]);
+
+    # SQL bind named interface
+    $itr = $db->search_joined_named(q[
+        SELECT * FROM user_item
+        INNER JOIN user
+            ON user_item.user_id = user.id
+        WHERE user.id = :user_id
+        ORDER BY user_item.item_id
+    ], { user_id => 2 });
 
 =head1 DESCRIPTION
 
@@ -89,6 +153,18 @@ Return L<Teng::Plugin::SearchJoined::Iterator> object.
 C<$table>, C<\%where> and C<\%opts> are same as arguments of L<Teng>'s C<search> method.
 
 C<$join_conds> is same as argument of L<SQL::Maker::Plugin::JoinSelect>'s C<join_select> method.
+
+=head3 C<< $itr:Teng::Plugin::SearchJoined::Iterator = $db->search_joined_by_sql($sql, $bind) >>
+
+Return L<Teng::Plugin::SearchJoined::Iterator> object.
+
+C<$sql> and C<$bind> are same as arguments of L<Teng>'s C<search_by_sql> method.
+
+=head3 C<< $itr:Teng::Plugin::SearchJoined::Iterator = $db->search_joined_named($sql, $args) >>
+
+Return L<Teng::Plugin::SearchJoined::Iterator> object.
+
+C<$sql> and C<$args> are same as arguments of L<Teng>'s C<search_named> method.
 
 =head1 SEE ALSO
 
