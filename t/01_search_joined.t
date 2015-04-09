@@ -109,4 +109,68 @@ subtest 'suppress_object_creation' => sub {
     is $count, 1;
 };
 
+subtest 'columns opts' => sub {
+    my $itr = $db->search_joined(user_item => [
+        user => {'user_item.user_id' => 'user.id'},
+    ], {
+        'user.id' => 1,
+    }, {
+        columns => ['user.name'],
+    });
+
+    isa_ok $itr, 'Teng::Plugin::SearchJoined::Iterator';
+
+    my $count = 0;
+    while (my ($user_item, $user) = $itr->next) {
+        isa_ok $user_item, 'Mock::BasicJoin::Row::UserItem';
+        isa_ok $user,      'Mock::BasicJoin::Row::User';
+
+        is_deeply $user_item->get_columns, {};
+
+        ok $user->name, 'aaa';
+        is_deeply $user->get_columns, {
+            name => 'aaa',
+        };
+
+        $count++;
+    }
+    is $count, 2;
+};
+
+subtest '+columns opts' => sub {
+    my $itr = $db->search_joined(user_item => [
+        user => {'user_item.user_id' => 'user.id'},
+    ], {
+        'user.id'      => 1,
+        'user_item.id' => 1,
+    }, {
+        '+columns' => [\'user.id+20 as calc'],
+    });
+
+    isa_ok $itr, 'Teng::Plugin::SearchJoined::Iterator';
+
+    my $count = 0;
+    while (my ($user_item, $user) = $itr->next) {
+        isa_ok $user_item, 'Mock::BasicJoin::Row::UserItem';
+        isa_ok $user,      'Mock::BasicJoin::Row::User';
+
+        ok $user_item->calc, 'base_table.calc';
+        is_deeply $user_item->get_columns, {
+            id      => 1,
+            user_id => 1,
+            item_id => 1,
+            calc    => 21,
+        };
+
+        is_deeply $user->get_columns, {
+            id   => 1,
+            name => 'aaa',
+        };
+
+        $count++;
+    }
+    is $count, 1;
+};
+
+
 done_testing;
