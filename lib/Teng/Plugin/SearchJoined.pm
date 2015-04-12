@@ -54,7 +54,7 @@ sub _get_select_joined_columns {
     }
 
     if ($opt->{'+columns'}) {
-        push @fields => @{$opt->{'+columns'}}
+        push @fields, @{$opt->{'+columns'}}
     }
 
     return \@fields;
