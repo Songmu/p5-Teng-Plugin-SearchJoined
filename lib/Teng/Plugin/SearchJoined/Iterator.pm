@@ -43,9 +43,17 @@ sub _seperate_rows {
     my $name_sep = quotemeta $self->{teng}{sql_builder}{name_sep};
     my $i = 0;
     for my $field (@{ $self->{fields} }) {
-        my $value = $row->[$i++];
-        my ($table, $column) = split /$name_sep/, $field;
+        my $value = $row->[$i];
+        my ($table, $column);
+        if (ref $field) {
+            $column = $self->{sth}->{NAME_lc}->[$i];
+            $table  = $self->{table_names}->[0]; # base_table
+        }
+        else {
+            ($table, $column) = split /$name_sep/, $field;
+        }
         $data{$table}{$column} = $value;
+        $i++;
     }
     \%data;
 }

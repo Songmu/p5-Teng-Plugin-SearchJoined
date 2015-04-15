@@ -9,7 +9,7 @@ use Teng::Plugin::SearchJoined::Iterator;
 use SQL::Maker;
 SQL::Maker->load_plugin('JoinSelect');
 
-our @EXPORT = qw/search_joined/;
+our @EXPORT = qw/search_joined _get_select_joined_columns/;
 
 sub search_joined {
     my ($self, $base_table, $join_conditions, $where, $opt) = @_;
@@ -22,15 +22,9 @@ sub search_joined {
     }
     my @tables = map { $self->{schema}->get_table($_) } @table_names;
 
-    my $name_sep = $self->{sql_builder}{name_sep};
-    my @fields;
-    for my $table (@tables) {
-        my $table_name = $table->name;
-        my @columns = map { "$table_name$name_sep$_" } @{ $table->columns };
-        push @fields, @columns;
-    }
+    my $fields = $self->_get_select_joined_columns(\@tables, $opt);
 
-    my ($sql, @binds) = $self->{sql_builder}->join_select($base_table, $join_conditions, \@fields, $where, $opt);
+    my ($sql, @binds) = $self->{sql_builder}->join_select($base_table, $join_conditions, $fields, $where, $opt);
     my $sth = $self->execute($sql, \@binds);
     my $itr = Teng::Plugin::SearchJoined::Iterator->new(
         teng        => $self,
@@ -38,10 +32,32 @@ sub search_joined {
         sql         => $sql,
         table_names => \@table_names,
         suppress_object_creation => $self->{suppress_row_objects},
-        fields      => \@fields,
+        fields      => $fields,
     );
 
     $itr;
+}
+
+sub _get_select_joined_columns {
+    my ($self, $tables, $opt) = @_;
+
+    if ($opt->{columns}) {
+        return $opt->{columns}
+    }
+
+    my @fields;
+    my $name_sep = $self->{sql_builder}{name_sep};
+    for my $table (@$tables) {
+        my $table_name = $table->name;
+        my @columns = map { "$table_name$name_sep$_" } @{ $table->columns };
+        push @fields, @columns;
+    }
+
+    if ($opt->{'+columns'}) {
+        push @fields, @{$opt->{'+columns'}}
+    }
+
+    return \@fields;
 }
 
 1;
