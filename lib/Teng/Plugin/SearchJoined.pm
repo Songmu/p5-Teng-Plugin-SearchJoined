@@ -9,7 +9,7 @@ use Teng::Plugin::SearchJoined::Iterator;
 use SQL::Maker;
 SQL::Maker->load_plugin('JoinSelect');
 
-our @EXPORT = qw/search_joined/;
+our @EXPORT = qw/search_joined _get_select_joined_columns/;
 
 sub search_joined {
     my ($self, $base_table, $join_conditions, $where, $opt) = @_;
@@ -22,7 +22,7 @@ sub search_joined {
     }
     my @tables = map { $self->{schema}->get_table($_) } @table_names;
 
-    my $fields = _get_select_joined_columns($self, \@tables, $opt);
+    my $fields = $self->_get_select_joined_columns(\@tables, $opt);
 
     my ($sql, @binds) = $self->{sql_builder}->join_select($base_table, $join_conditions, $fields, $where, $opt);
     my $sth = $self->execute($sql, \@binds);
